@@ -1,59 +1,54 @@
-# syntax = docker/dockerfile:1
+FROM ruby:3.3.0-slim-bullseye AS base
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.3.0
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+RUN apt-get update && apt-get install libjemalloc2 && rm -rf /var/lib/apt/lists/*
+ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
-# Rails app lives here
-WORKDIR /rails
+WORKDIR /app
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends build-essential curl \
+  && curl -sSL https://deb.nodesource.com/setup_16.x | bash - \
+  && curl -sSL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+  && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+  && apt-get install -y --no-install-recommends build-essential curl \
+  && apt-get update && apt-get install -y --no-install-recommends nodejs default-libmysqlclient-dev \
+  && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
+  && apt-get clean \
+  && useradd --create-home ruby \
+  && chown ruby:ruby -R /app \
+  && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
 
+USER ruby
 
-# Throw-away build stage to reduce size of final image
-FROM base as build
+# Bundle etc
+COPY --chown=ruby:ruby Gemfile* ./
+RUN bundle install --jobs "$(nproc)"
 
-# Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libvips pkg-config
+###############################################################################
 
-# Install application gems
-COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+FROM base AS app
+LABEL maintainer="The Curve <info@thecurve.io>"
 
-# Copy application code
-COPY . .
+COPY --chown=ruby:ruby bin/ ./bin
+RUN chmod 0755 bin/*
 
-# Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+ARG RAILS_ENV="production"
+ENV RAILS_ENV="${RAILS_ENV}" \
+    PATH="${PATH}:/home/ruby/.local/bin" \
+    USER="ruby"
 
+COPY --chown=ruby:ruby . .
 
-# Final stage for app image
-FROM base
+RUN if [ "${RAILS_ENV}" != "development" ]; then \
+  SECRET_KEY_BASE=dummyvalue \
+  NO_SECRETS=1 \
+  REDIS_URL=redis://redis:6379/1 \
+  rails assets:precompile; fi
 
-# Install packages needed for deployment
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl default-mysql-client libvips && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+CMD ["bash"]
 
-# Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
+ENTRYPOINT ["bundle", "exec"]
 
-# Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER rails:rails
-
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD ["./bin/rails", "server"]
+
+CMD ["rails", "s"]

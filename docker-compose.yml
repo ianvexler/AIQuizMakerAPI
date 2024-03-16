@@ -1,0 +1,141 @@
+
+version: "3.8"
+
+x-app: &default-app
+  build:
+    context: "."
+    target: "app"
+    args:
+      - "RAILS_ENV=development"
+      - "NODE_ENV=development"
+      - "LD_PRELOAD_PATH=${LD_PRELOAD_PATH:-/usr/lib/x86_64-linux-gnu/libjemalloc.so.2}"
+  depends_on:
+    - database
+    - databasetest
+    - redis
+  env_file:
+    - ".env"
+  restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+  stop_grace_period: "3s"
+  tty: true
+  volumes:
+    - "${DOCKER_WEB_VOLUME:-./public:/app/public}"
+    - ./tmp/letter_opener:/app/tmp/letter_opener
+    - ./tmp/screenshots:/app/tmp/screenshots
+    - /dev/shm:/dev/shm
+  tmpfs:
+    - /app/tmp/pids:uid=1000,gid=1000
+  networks:
+    - quiz_maker
+services:
+  redis:
+    networks:
+      - quiz_maker
+    env_file:
+      - ".env"
+    image: "redis:6.2.3-buster"
+    restart: "unless-stopped"
+    stop_grace_period: "3s"
+    volumes:
+      - "redis:/data"
+
+  web:
+    <<: *default-app
+    healthcheck:
+      test: "curl localhost:3000/up"
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
+    ports:
+      - "3000:3000"
+    stdin_open: true
+
+  worker:
+    <<: *default-app
+    command: "sidekiq -C config/sidekiq.yml"
+    entrypoint: []
+    stdin_open: true
+
+  database:
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: quiz_maker_development
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+    image: "mysql:5.7.43"
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test:
+        ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "mysql", "-pmysql"]
+      interval: 15s
+      timeout: 5s
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - quiz_maker
+
+  databasetest:
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: quiz_maker_test
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+    image: "mysql:5.7.43"
+    healthcheck:
+      test:
+        [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "mysql", "-pmysql" ]
+      interval: 15s
+      timeout: 5s
+    networks:
+      - quiz_maker
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./tmp/aws/data:/data
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio123
+      - MINIO_REGION=eu-west-2
+    command: server --console-address ":9001" /data
+    networks:
+      - quiz_maker
+
+  create_buckets:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      sh -c "
+      mc alias set myminio http://minio:9000 minio minio123;
+      mc mb myminio/bucket;
+      mc anonymous set public myminio/bucket;
+      tail -f /dev/null;
+      "
+    networks:
+      - quiz_maker
+
+#  cable:
+#    <<: *default-app
+#    command: "puma -p 28080 cable/config.ru"
+#    entrypoint: []
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "${DOCKER_CABLE_CPUS:-0}"
+#          memory: "${DOCKER_CABLE_MEMORY:-0}"
+#    ports:
+#      - "${DOCKER_CABLE_PORT_FORWARD:-127.0.0.1:28080}:28080"
+
+volumes:
+  redis: {}
+  db: {}
+networks:
+  quiz_maker:
+    name: quiz_maker
+    driver: bridge

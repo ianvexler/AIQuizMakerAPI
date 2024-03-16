@@ -1,0 +1,386 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+DC="${DC:-exec}"
+
+# If we're running in CI we need to disable TTY allocation for docker-compose
+# commands that enable it by default, such as exec and run.
+TTY=""
+if [[ ! -t 1 ]]; then
+  TTY="-T"
+fi
+
+# -----------------------------------------------------------------------------
+# Helper functions start with _ and aren't listed in this script's help menu.
+# -----------------------------------------------------------------------------
+
+function _destroy_selenium_container_for_test {
+  echo; echo "Info: Removing any selenium_chrome container previously started"; echo;
+  _dct rm -s -f selenium_chrome
+}
+
+function _is_arm64 {
+  # Whether or not this machine's architecture is ARM64
+
+  if [ "$(uname -m)" == "aarch64" ] || [ "$(uname -m)" == "arm64" ] || [ "$(arch)" == "aarch64" ]; then
+    true
+  else
+    false
+  fi
+}
+
+function _get_jemalloc_path {
+  # Returns the platform-specific path for libjemalloc2.
+  # Exits with:
+  #   0: when path is determined
+  #   1: when architecture is unhandled
+  #
+  # Troubleshoot:
+  # How to add support for my architecture?
+  #   Check what architecture you're running:
+  #     $ uname -m
+  #   Run the following command to check where libjemalloc.so.2 installs:
+  #     $ docker run -it --rm ruby:3.0.3-slim-bullseye bash -c \
+  #         "apt-get update && apt-get install -y libjemalloc2 rm -rf /var/lib/apt/lists/*; \
+  #         echo; echo 'Use the following path for LD_PRELOAD:'; \
+  #         ldconfig -p | grep libjemalloc | awk '{print $4}'"
+  #   Copy the printed path at the end of the command, then include in this function.
+  #   Now to check if its working, start the stack and let it build, then on a separate terminal window:
+  #     $ docker compose exec web bash
+  #     $ ldd $(which ruby) | grep libjemalloc
+  #     # Above should print something like (which means that libjemalloc is linked to Ruby):
+  #     # /usr/lib/aarch64-linux-gnu/libjemalloc.so.2 (0x0000ffff85e15000)
+  local architecture
+
+  command -v uname &> /dev/null || {
+    # Failed to determine architecture
+    echo "Failed to determine the architecture using uname"
+    echo "Pro tip: Check the '_get_jemalloc_path' function within the 'run' script on how to support your architecture."
+    return 1
+  }
+
+  # Echo the correct path for LD_PRELOAD based on the host machine's architecture
+  architecture="$(uname -m)"
+  case $architecture in
+    x86_64)
+      echo "/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"
+      ;;
+    arm64 | aarch64)
+      echo "/usr/lib/aarch64-linux-gnu/libjemalloc.so.2"
+      ;;
+    *)
+      echo "Failed to determine path for LD_PRELOAD. Unhandled architecture: $architecture"
+      echo "Pro tip: Check the '_get_jemalloc_path' function within the 'run' script on how to support your architecture."
+      return 1
+      ;;
+  esac
+}
+
+function _dc {
+  docker compose "${DC}" ${TTY} "${@}"
+}
+
+# shellcheck disable=SC2086
+function _dct {
+  if _is_arm64; then
+    echo "Info: ARM64 architecture detected. Using 'docker-compose.arm64.test.yml' override"
+    echo
+
+    CONDITIONAL_ARM64_DOCKER_OVERRIDE="-f=docker-compose.arm64.test.yml"
+  fi
+
+  LD_PRELOAD_PATH=$(_get_jemalloc_path) docker compose \
+    -f docker-compose.yml \
+    -f docker-compose.test.yml \
+    ${CONDITIONAL_ARM64_DOCKER_OVERRIDE} \
+    "${@}"
+}
+
+function _build_run_down {
+  LD_PRELOAD_PATH=$(_get_jemalloc_path) docker compose build
+  docker compose run ${TTY} "${@}"
+  docker compose down
+}
+
+# -----------------------------------------------------------------------------
+
+function cmd {
+  # Run any command you want in the web container
+  _dc web "${@}"
+}
+
+function stack {
+#  add_git_hooks
+  LD_PRELOAD_PATH=$(_get_jemalloc_path) COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 exec docker compose up --build --abort-on-container-exit
+}
+
+function add_git_hooks {
+  npx lefthook install
+}
+
+function rails {
+  # Run any Rails commands
+  cmd rails "${@}"
+}
+
+function rspec {
+  trap _destroy_selenium_container_for_test EXIT INT TERM
+
+  # shellcheck disable=SC1091
+  . .env
+
+  _destroy_selenium_container_for_test
+
+  _dct run web rails db:drop db:create db:schema:load
+  _dct run --rm --use-aliases web bundle exec rspec "${@}"
+
+}
+
+function jest {
+  # shellcheck disable=SC1091
+  npx yarn test "${@}"
+}
+
+function check {
+  lint
+  rspec "${@}"
+}
+
+function check:fix {
+  lint:fix
+  rspec "${@}"
+}
+
+function lint {
+  prettier
+  eslint
+  rubocop
+  haml_lint
+}
+
+function lint:fix {
+  prettier:fix
+  eslint:fix
+  rubocop:fix
+  haml_lint
+}
+
+# shellcheck disable=SC2120
+function prettier {
+  # Run prettier check
+  # E.g:
+  #   ./run prettier                       => to run on all project files
+  #   ./run prettier README.md LICENSE.md  => to run on specified files only 
+
+  if [ $# -eq 0 ]; then
+    yarn prettier -c .
+  else
+    yarn prettier -c "${@}"
+  fi
+}
+
+# shellcheck disable=SC2120
+function prettier:fix {
+  # Run prettier check with auto-fix
+  # E.g:
+  #   ./run prettier:fix                           => to run on all project files and dirs
+  #   ./run prettier:fix something.js src/else.js  => to to only run on specified files / dirs 
+
+  if [ $# -eq 0 ]; then
+    yarn prettier --write .
+  else
+    yarn prettier --write "${@}"
+  fi
+}
+
+# shellcheck disable=SC2120
+function eslint {
+  # Run eslint check
+  # E.g:
+  #   ./run eslint                           => to run on all project files and dirs
+  #   ./run eslint something.js src/else.js  => to only run on specified files / dirs 
+
+  if [ $# -eq 0 ]; then
+    yarn run eslint .
+  else
+    yarn run eslint "${@}"
+  fi
+}
+
+# shellcheck disable=SC2120
+function eslint:fix {
+  # Run eslint check with auto-fix
+  # E.g:
+  #   ./run eslint:fix                           => to run on all project files and dirs
+  #   ./run eslint:fix something.js src/else.js  => to only run on specified files / dirs 
+
+  if [ $# -eq 0 ]; then
+    yarn run eslint --fix .
+  else
+    yarn run eslint --fix "${@}"
+  fi
+}
+
+# shellcheck disable=SC2120
+function rubocop {
+  # Run rubocop
+  # E.g:
+  #   ./run rubocop                       => to run on all project files and dirs
+  #   ./run rubocop app lib/something.rb  => to to only run on specified files / dirs 
+
+  docker compose run web rubocop "${@}"
+}
+
+# shellcheck disable=SC2120
+function rubocop:fix {
+  # Run rubocop with auto-correct
+  # E.g:
+  #   ./run rubocop:fix                       => to run on all project files and dirs
+  #   ./run rubocop:fix app lib/something.rb  => to to only run on specified files / dirs 
+  git diff --diff-filter=d --name-only HEAD | xargs -r docker compose run -T web rubocop -a "${@}" --force-exclusion --color
+}
+
+# shellcheck disable=SC2120
+function haml_lint {
+  # Run haml_lint
+  # E.g:
+  #   ./run haml_lint                                    => to run on all project files and dirs
+  #   ./run haml_lint extra_views views/index.html.haml  => to to only run on specified files / dirs 
+
+  docker compose run web haml-lint "${@}"
+}
+
+function swaggerize {
+  # shellcheck disable=SC1091
+  . .env
+  docker compose run -e "RAILS_ENV=test" -e "DATABASE_URL=${TEST_DATABASE_URL}" web rails db:create db:migrate
+  docker compose run -e "RAILS_ENV=test" -e 'SWAGGER_DRY_RUN=0' -e "DATABASE_URL=${TEST_DATABASE_URL}" web rails rswag:specs:swaggerize
+}
+
+function bash {
+  ## Start a Bash session in the web container
+  cmd bash "${@}"
+}
+
+function psql {
+  ## Connect to PostgreSQL with psql
+  # shellcheck disable=SC1091
+  . .env
+ _dc postgres psql -U "${POSTGRES_USER}" "${@}"
+}
+
+function stripe:listen {
+  ## Listen to stripe webhook events for platform and connected accounts in test mode.
+  command -v stripe &> /dev/null || {
+    echo "You do not have Stripe CLI installed on your machine"
+    echo "Please download the Stripe CLI and log in with your Stripe account and then try again"
+    return 1
+  }
+
+  # shellcheck disable=SC1091
+  . .env
+
+  echo "Info: Using stripe-cli installed on your machine"
+  echo " + Platform account events are being forwarded to http://localhost:3000/stripe/events"
+  echo " + Connected account events are being forwarded to http://localhost:3000/stripe/events/connect"
+  echo
+
+  stripe listen --forward-to=http://localhost:3000/stripe/events --forward-connect-to=http://localhost:3000/stripe/events/connect "${@}"
+}
+
+function redis-cli {
+  ## Connect to Redis with redis-cli
+  _dc redis redis-cli "${@}"
+}
+
+function bundle:install {
+  ## Install Ruby dependencies and write out a lock file
+  _build_run_down web bundle install
+}
+
+function bundle:outdated {
+  ## List any installed gems that are outdated
+  cmd bundle outdated
+}
+
+function bundle:update {
+  ## Update any installed gems that are outdated
+  cmd bundle update
+  bundle:install
+}
+
+function yarn:install {
+  ## Install Yarn dependencies and write out a lock file
+  _build_run_down web yarn install
+}
+
+function yarn:outdated {
+  ## Install yarn dependencies and write lock file
+  _dc web yarn outdated
+}
+
+function clean {
+  ## Remove cache and other machine generates files
+  rm -rf node_modules/ public/assets public/packs* tmp/* .byebug_history
+}
+
+function ci:install-deps {
+  # Install Continuous Integration (CI) dependencies
+  sudo apt-get install -y curl shellcheck
+  sudo curl \
+    -L https://raw.githubusercontent.com/nickjj/wait-until/v0.1.2/wait-until \
+    -o /usr/local/bin/wait-until && sudo chmod +x /usr/local/bin/wait-until
+}
+
+function ci:jest {
+  # Execute Continuous Integration (CI) pipeline for JavaScript
+  #
+  # It's expected that your CI environment has these tools available:
+  #   - https://github.com/koalaman/shellcheck
+  #   - https://github.com/nickjj/wait-until
+  shellcheck run bin/docker-entrypoint-web
+  cp --no-clobber .env.example .env
+  echo -e "\nexport CI=1" >> .env
+
+  yarn install --frozen-lockfile
+  yarn test "${@}"
+}
+
+function ci:test {
+  # Execute Continuous Integration (CI) pipeline
+  #
+  # It's expected that your CI environment has these tools available:
+  #   - https://github.com/koalaman/shellcheck
+  #   - https://github.com/nickjj/wait-until
+  shellcheck run bin/docker-entrypoint-web
+
+  cp --no-clobber .env.example .env
+  echo -e "\nexport CI=1" >> .env
+
+  _dct build
+  _dct up -d
+
+  # TODO: Make this generic
+  # shellcheck disable=SC1091
+  . .env
+  wait-until "docker compose exec -T databasetest bash -c \"echo SELECT 1 | mysql -u mysql -pmysql quiz_maker_test\""
+
+  _dct run web rails db:environment:set
+  _dct run web rails db:migrate:reset
+
+  # Run rspec
+  _dct run --rm --use-aliases web bundle exec rspec
+}
+
+function help {
+  printf "%s <task> [args]\n\nTasks:\n" "${0}"
+
+  compgen -A function | grep -v "^_" | cat -n
+
+  printf "\nExtended help:\n  Each task has comments for general usage\n"
+}
+
+# This idea is heavily inspired by: https://github.com/adriancooney/Taskfile
+TIMEFORMAT=$'\nTask completed in %3lR'
+time "${@:-help}"
