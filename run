@@ -134,7 +134,7 @@ function jest {
 }
 
 function check {
-  # lint
+  lint
   rspec "${@}"
 }
 
@@ -144,17 +144,13 @@ function check:fix {
 }
 
 function lint {
-  prettier
-  eslint
+  # prettier
   rubocop
-  haml_lint
 }
 
 function lint:fix {
-  prettier:fix
-  eslint:fix
+  # prettier
   rubocop:fix
-  haml_lint
 }
 
 # shellcheck disable=SC2120
@@ -186,34 +182,6 @@ function prettier:fix {
 }
 
 # shellcheck disable=SC2120
-function eslint {
-  # Run eslint check
-  # E.g:
-  #   ./run eslint                           => to run on all project files and dirs
-  #   ./run eslint something.js src/else.js  => to only run on specified files / dirs 
-
-  if [ $# -eq 0 ]; then
-    yarn run eslint .
-  else
-    yarn run eslint "${@}"
-  fi
-}
-
-# shellcheck disable=SC2120
-function eslint:fix {
-  # Run eslint check with auto-fix
-  # E.g:
-  #   ./run eslint:fix                           => to run on all project files and dirs
-  #   ./run eslint:fix something.js src/else.js  => to only run on specified files / dirs 
-
-  if [ $# -eq 0 ]; then
-    yarn run eslint --fix .
-  else
-    yarn run eslint --fix "${@}"
-  fi
-}
-
-# shellcheck disable=SC2120
 function rubocop {
   # Run rubocop
   # E.g:
@@ -230,16 +198,6 @@ function rubocop:fix {
   #   ./run rubocop:fix                       => to run on all project files and dirs
   #   ./run rubocop:fix app lib/something.rb  => to to only run on specified files / dirs 
   git diff --diff-filter=d --name-only HEAD | xargs -r docker compose run -T web rubocop -a "${@}" --force-exclusion --color
-}
-
-# shellcheck disable=SC2120
-function haml_lint {
-  # Run haml_lint
-  # E.g:
-  #   ./run haml_lint                                    => to run on all project files and dirs
-  #   ./run haml_lint extra_views views/index.html.haml  => to to only run on specified files / dirs 
-
-  docker compose run web haml-lint "${@}"
 }
 
 function swaggerize {
