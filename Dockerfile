@@ -27,7 +27,6 @@ RUN bundle install --jobs "$(nproc)"
 ###############################################################################
 
 FROM base AS app
-LABEL maintainer="The Curve <info@thecurve.io>"
 
 COPY --chown=ruby:ruby bin/ ./bin
 RUN chmod 0755 bin/*

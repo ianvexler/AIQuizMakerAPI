@@ -42,7 +42,7 @@ services:
   web:
     <<: *default-app
     healthcheck:
-      test: "curl localhost:3000/up"
+      test: "curl localhost:3000/health_check"
       interval: "60s"
       timeout: "3s"
       start_period: "5s"

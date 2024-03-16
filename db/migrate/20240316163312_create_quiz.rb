@@ -1,0 +1,10 @@
+class CreateQuiz < ActiveRecord::Migration[7.1]
+  def change
+    create_table :quizzes do |t|
+      t.string :title, null: false
+      t.string :goal
+      t.string :instructions
+      t.timestamps
+    end
+  end
+end

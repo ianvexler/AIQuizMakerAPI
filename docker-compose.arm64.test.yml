@@ -1,0 +1,17 @@
+# docker-compose.arm64.test.yml
+#
+# Compose override applied on ARM64 based machines. See usage in `run #rspec`.
+#
+# `docker-compose.test.yml` uses the 'selenium/standalone-chrome' image that only
+# supports Intel/amd64 and not Debian ARM64, ARM/v7Debian ARM64, ARM/v7,
+# making tests hang.
+#
+# This compose override uses a fork of the same original image but built to be compatible with ARM64.
+# - Learn more here: https://github.com/seleniumhq-community/docker-seleniarm
+# - See issue discussion here: https://github.com/SeleniumHQ/docker-selenium/issues/1076#issuecomment-1057073262
+
+services:
+  selenium_chrome:
+    image: seleniarm/standalone-chromium:latest
+    networks:
+      - quiz_maker

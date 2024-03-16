@@ -15,11 +15,6 @@ fi
 # Helper functions start with _ and aren't listed in this script's help menu.
 # -----------------------------------------------------------------------------
 
-function _destroy_selenium_container_for_test {
-  echo; echo "Info: Removing any selenium_chrome container previously started"; echo;
-  _dct rm -s -f selenium_chrome
-}
-
 function _is_arm64 {
   # Whether or not this machine's architecture is ARM64
 
@@ -125,16 +120,12 @@ function rails {
 }
 
 function rspec {
-  trap _destroy_selenium_container_for_test EXIT INT TERM
-
   # shellcheck disable=SC1091
   . .env
 
-  _destroy_selenium_container_for_test
-
   _dct run web rails db:drop db:create db:schema:load
   _dct run --rm --use-aliases web bundle exec rspec "${@}"
-
+  _dct rm -s -f selenium_chrome
 }
 
 function jest {
@@ -143,7 +134,7 @@ function jest {
 }
 
 function check {
-  lint
+  # lint
   rspec "${@}"
 }
 

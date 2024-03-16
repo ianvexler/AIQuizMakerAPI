@@ -1,0 +1,13 @@
+# docker-compose.test.yml
+services:
+  web:
+    environment:
+      - RAILS_ENV=test
+      - DATABASE_URL=${TEST_DATABASE_URL}
+      - SELENIUM_REMOTE_HOST=selenium_chrome
+    depends_on:
+      - selenium_chrome
+  selenium_chrome:
+    image: selenium/standalone-chrome
+    networks:
+      - quiz_maker
