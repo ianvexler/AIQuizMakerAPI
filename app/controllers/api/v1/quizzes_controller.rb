@@ -1,19 +1,12 @@
 class Api::V1::QuizzesController < ActionController::API
+  rescue_from Faraday::BadRequestError, with: :handle_bad_request
+
   def create_gemini
     @gemini_api_client = GeminiApiService.instance
 
     quiz_params = params[:quiz]
 
-    begin
-      @quiz_data = @gemini_api_client.create_quiz(quiz_params[:title])
-    rescue Faraday::BadRequestError => e
-      response = {
-        message: e.message,
-        body: e.response[:body]
-      }
-
-      return render json: response, status: :bad_request
-    end
+    @quiz_data = @gemini_api_client.create_quiz(quiz_params[:title])
 
     if @quiz_data.present?
       @quiz = Quiz.new(
@@ -34,18 +27,9 @@ class Api::V1::QuizzesController < ActionController::API
 
     quiz_params = params[:quiz]
 
-    begin
-      @quiz_data = @open_ai_api_client.create_quiz(
-        quiz_params[:title], quiz_params[:goal], quiz_params[:instructions]
-      )
-    rescue Faraday::BadRequestError => e
-      response = {
-        message: e.message,
-        body: e.response[:body]
-      }
-
-      return render json: response, status: :bad_request
-    end
+    @quiz_data = @open_ai_api_client.create_quiz(
+      quiz_params[:title], quiz_params[:goal], quiz_params[:instructions]
+    )
 
     if @quiz_data.present?
       @quiz = Quiz.new(
@@ -59,5 +43,13 @@ class Api::V1::QuizzesController < ActionController::API
     end
 
     render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
+  end
+
+  def handle_bad_request(exception)
+    response = {
+      message: exception.message,
+      body: exception.response[:body]
+    }
+    render json: response, status: :bad_request
   end
 end
