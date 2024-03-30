@@ -14,8 +14,8 @@ gem 'puma', '>= 5.0'
 gem 'rubocop', '~> 1.62', require: false
 gem 'sidekiq'
 gem 'tzinfo-data', platforms: %i[windows jruby]
-gem 'httparty'
 gem 'singleton'
+gem 'gemini-ai', '~> 3.2.0'
 
 group :development, :test do
   gem 'debug', platforms: %i[mri mingw x64_mingw]

@@ -6,6 +6,8 @@ class CreateQuiz < ActiveRecord::Migration[7.1]
       t.string :title, null: false
       t.string :goal
       t.string :instructions
+      t.json :quiz_data, null: false
+      
       t.timestamps
     end
   end

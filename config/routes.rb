@@ -9,5 +9,12 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  namespace :api do
+    namespace :v1 do
+      resource :quizzes, only: %i[create]
+    end
+  end
+
   get '/health_check', to: 'health_checks#check'
 end

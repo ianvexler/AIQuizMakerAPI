@@ -34,6 +34,7 @@ Layout/LineLength:
   Max: 120
   Exclude:
     - config/*
+    - app/lib/gemini_api_client.rb
 Metrics/ClassLength:
   Max: 500
 Metrics/BlockLength:
@@ -53,6 +54,8 @@ Metrics/BlockLength:
     - config/routes.rb
 Metrics/MethodLength:
   Max: 20
+  Exclude:
+    - app/lib/gemini_api_client.rb
 Style/FormatStringToken:
   Enabled: false
 Rails/HelperInstanceVariable:

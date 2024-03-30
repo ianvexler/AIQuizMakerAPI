@@ -1,24 +1,31 @@
-# README
+# AIQuizMakerAPI
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+To work locally with the API use the url
 
-Things you may want to cover:
+```shell
+https://localhost:3000/api/v1
+```
 
-* Ruby version
+## Getting Started
 
-* System dependencies
+This Dockerized Stack is based on [this repo](https://github.com/nickjj/docker-rails-example).
 
-* Configuration
+1. Copy `.env.example` and customise (if necessary):
 
-* Database creation
+```shell
+cp .env.example .env
+```
 
-* Database initialization
+2. Add your Google API Key to `GOOGLE_API_KEY`. For more details view [Google Help](https://support.google.com/googleapi/answer/6158862?hl=en).
 
-* How to run the test suite
+3. Make sure you use `Docker Compose V2`:
 
-* Services (job queues, cache servers, search engines, etc.)
+```shell
+docker compose version
+```
 
-* Deployment instructions
+4. Finally, run the stack with:
 
-* ...
+```shell
+./run stack
+```
