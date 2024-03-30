@@ -34,7 +34,9 @@ docker compose version
 To Create a Quiz use the endpoint
 
 ```shell
-http://localhost:3000/api/v1/quizzes
+http://localhost:3000/api/v1/quizzes/gemini (To use gemini)
+
+http://localhost:3000/api/v1/quizzes/gpt (To use gpt-4)
 ```
 
 With a request format e.g.
