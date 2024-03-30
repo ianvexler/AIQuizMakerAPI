@@ -16,6 +16,11 @@ Rails.application.routes.draw do
         post 'gpt', to: 'quizzes#create_gpt', on: :collection
         post 'gemini', to: 'quizzes#create_gemini', on: :collection
       end
+
+      namespace :admin do
+        resources :ai_queries, except: %i[edit]
+        resources :ai_query_types, except: %i[show edit]
+      end
     end
   end
 
