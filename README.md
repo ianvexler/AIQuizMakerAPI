@@ -34,7 +34,9 @@ docker compose version
 To Create a Quiz use the endpoint
 
 ```shell
-http://localhost:3000/api/v1/quizzes
+http://localhost:3000/api/v1/quizzes/gemini (To use gemini)
+
+http://localhost:3000/api/v1/quizzes/gpt (To use gpt-4)
 ```
 
 With a request format e.g.
@@ -42,9 +44,9 @@ With a request format e.g.
 ```shell
 {
     "quiz": {
-        "title": "Micro Economics",
-        "goal": "To understand Micro Economics",
-        "instructions": "Complete this quiz"
+        "title": "ALevel Derivatives Exam",
+        "goal": "To prove understanding on ALevel difficulty derivative questions",
+        "instructions": "Make the last question difficult"
     }
 }
 ```

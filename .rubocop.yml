@@ -35,6 +35,7 @@ Layout/LineLength:
   Exclude:
     - config/*
     - app/lib/gemini_api_client.rb
+    - app/lib/open_ai_api_client.rb
 Metrics/ClassLength:
   Max: 500
 Metrics/BlockLength:
@@ -56,6 +57,7 @@ Metrics/MethodLength:
   Max: 20
   Exclude:
     - app/lib/gemini_api_client.rb
+    - app/lib/open_ai_api_client.rb
 Style/FormatStringToken:
   Enabled: false
 Rails/HelperInstanceVariable:
