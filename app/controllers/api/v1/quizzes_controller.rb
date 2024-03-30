@@ -15,14 +15,16 @@ class Api::V1::QuizzesController < ActionController::API
       return render json: response, status: :bad_request
     end
 
-    @quiz = Quiz.create(
-      title: quiz_params[:title],
-      goal: quiz_params[:goal],
-      instructions: quiz_params[:instructions],
-      quiz_data: @quiz_data
-    )
+    if @quiz_data.present?
+      @quiz = Quiz.new(
+        title: quiz_params[:title],
+        goal: quiz_params[:goal],
+        instructions: quiz_params[:instructions],
+        quiz_data: @quiz_data.to_json
+      )
 
-    return render json: { quiz: @quiz }, status: :ok if @quiz.save
+      return render json: { quiz: @quiz }, status: :ok if @quiz.save
+    end
 
     render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
   end

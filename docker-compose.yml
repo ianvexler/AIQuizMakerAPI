@@ -41,6 +41,7 @@ services:
 
   web:
     <<: *default-app
+    command: rails server -b 0.0.0.0
     healthcheck:
       test: "curl localhost:3000/health_check"
       interval: "60s"

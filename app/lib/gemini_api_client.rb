@@ -8,7 +8,10 @@ class GeminiApiClient
         api_key:,
         version: 'v1beta'
       },
-      options: { model: 'gemini-1.0-pro', server_sent_events: false }
+      options: {
+        model: 'gemini-1.0-pro',
+        server_sent_events: false
+      }
     )
   end
 

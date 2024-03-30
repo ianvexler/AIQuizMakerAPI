@@ -1,9 +1,9 @@
 # AIQuizMakerAPI
 
-To work locally with the API use the url
+To work locally with the API use this as the base URL:
 
 ```shell
-https://localhost:3000/api/v1
+http://localhost:3000/api/v1/
 ```
 
 ## Getting Started
@@ -29,3 +29,30 @@ docker compose version
 ```shell
 ./run stack
 ```
+## Notes
+
+To Create a Quiz use the endpoint
+
+```shell
+http://localhost:3000/api/v1/quizzes
+```
+
+With a request format e.g.
+
+```shell
+{
+    "quiz": {
+        "title": "Micro Economics",
+        "goal": "To understand Micro Economics",
+        "instructions": "Complete this quiz"
+    }
+}
+```
+
+To view the quiz generated from the response of this request using axios look for:
+
+```shell
+response.data.quiz_data
+```
+
+This is the JSON response by gemini in a string format. Make sure to parse it into a JSON format. 
