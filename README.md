@@ -31,6 +31,12 @@ docker compose version
 ```shell
 ./run stack
 ```
+
+5. (Suggested) Setup the database
+```shell
+./run rails db:migrate db:seed
+```
+
 ## Notes
 
 To Create a Quiz use the endpoint

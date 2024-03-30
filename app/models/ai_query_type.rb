@@ -10,11 +10,11 @@
 class AiQueryType < ApplicationRecord
   has_many :ai_queries, dependent: :destroy
 
-  before_destroy :has_queries?
+  before_destroy :check_has_queries?
 
   private
 
-  def has_queries?
+  def check_has_queries?
     return unless ai_queries.any?
 
     errors.add(:base, 'Cannot delete Query Type with associated Queries')
