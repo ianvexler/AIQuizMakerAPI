@@ -52,7 +52,7 @@ With a request format e.g.
 To view the quiz generated from the response of this request using axios look for:
 
 ```shell
-response.data.quiz_data
+response.data.quiz.quiz_data
 ```
 
 This is the JSON response by gemini in a string format. Make sure to parse it into a JSON format. 
