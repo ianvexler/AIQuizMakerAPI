@@ -42,9 +42,9 @@ With a request format e.g.
 ```shell
 {
     "quiz": {
-        "title": "Micro Economics",
-        "goal": "To understand Micro Economics",
-        "instructions": "Complete this quiz"
+        "title": "ALevel Derivatives Exam",
+        "goal": "To prove understanding on ALevel difficulty derivative questions",
+        "instructions": "Make the last question difficult"
     }
 }
 ```
