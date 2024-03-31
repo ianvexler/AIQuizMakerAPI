@@ -1,13 +1,13 @@
 class Api::V1::Admin::AiQueryTypesController < ActionController::API
   def index
     @ai_query_types = AiQueryType.all
-    render json: { ai_query_types: @ai_query_types }, status: :ok
+    render json: @ai_query_types, each_serializer: AiQueryTypeSerializer, status: :ok
   end
 
   def create
     @ai_query_type = AiQueryType.new(ai_query_type_params)
 
-    return render json: { ai_query_type: @ai_query_type }, status: :ok if @ai_query_type.save
+    return render json: @ai_query_type, each_serializer: AiQueryTypeSerializer, status: :ok if @ai_query_type.save
 
     render json: { errors: @ai_query_type.errors }, status: :unprocessable_entity
   end
@@ -15,7 +15,9 @@ class Api::V1::Admin::AiQueryTypesController < ActionController::API
   def update
     @ai_query_type = AiQueryType.find(params[:id])
 
-    return render json: { ai_query_type: @ai_query_type }, status: :ok if @ai_query_type.update(ai_query_type_params)
+    if @ai_query_type.update(ai_query_type_params)
+      return render json: @ai_query_type, each_serializer: AiQueryTypeSerializer, status: :ok
+    end
 
     render json: { errors: @ai_query_type.errors }, status: :unprocessable_entity
   end

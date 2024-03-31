@@ -25,6 +25,15 @@ seed_block 'AiQueryType' do
   ]
 
   ai_query_types.map do |name|
-    AiQueryType.find_or_create_by!(name:)
+    ai_query_type = AiQueryType.find_or_create_by!(name:)
+
+    next if ai_query_type.ai_queries.any?
+
+    AiQuery.create(
+      text: '',
+      json_format: {},
+      draft: true,
+      ai_query_type_id: ai_query_type.id
+    )
   end
 end

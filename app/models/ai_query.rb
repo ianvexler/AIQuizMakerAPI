@@ -31,7 +31,7 @@ class AiQuery < ApplicationRecord
   def set_version_number
     latest_version = ai_query_type.ai_queries.order(version: :desc).first
 
-    self.version = (latest_version || 0) + 1
+    self.version = (latest_version.version || 0) + 1
   end
 
   def check_active

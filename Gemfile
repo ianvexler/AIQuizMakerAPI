@@ -17,6 +17,8 @@ gem 'tzinfo-data', platforms: %i[windows jruby]
 gem 'singleton'
 gem 'gemini-ai', '~> 3.2.0'
 gem "ruby-openai"
+gem 'rack-cors'
+gem 'active_model_serializers'
 
 group :development, :test do
   gem 'debug', platforms: %i[mri mingw x64_mingw]
