@@ -12,4 +12,8 @@ class GeminiApiService
     quiz_query = "Make a Quiz about #{quiz_title}"
     @client.create_quiz(quiz_query)
   end
+
+  def test_query(text, json_format)
+    @client.test_query(text, json_format)
+  end
 end

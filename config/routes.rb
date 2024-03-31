@@ -18,8 +18,10 @@ Rails.application.routes.draw do
       end
 
       namespace :admin do
-        resources :ai_queries, except: %i[create edit]
-        resources :ai_query_types, except: %i[show edit]
+        resources :queries, except: %i[edit] do
+          get 'test', to: 'queries#test', on: :collection
+        end
+        resources :query_types, except: %i[show edit]
       end
     end
   end

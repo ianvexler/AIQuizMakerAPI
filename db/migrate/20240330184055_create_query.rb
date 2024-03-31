@@ -1,4 +1,4 @@
-class CreateAiQuery < ActiveRecord::Migration[7.1]
+class CreateQuery < ActiveRecord::Migration[7.1]
   def change
     create_table :queries do |t|
       t.string :text, null: false

@@ -18,22 +18,13 @@ def seed_block(name)
   Rails.logger.info("#{name.capitalize} seeded")
 end
 
-seed_block 'AiQueryType' do
-  ai_query_types = [
+seed_block 'QueryType' do
+  query_types = [
     'Quiz Generation',
     'Question Generation'
   ]
 
-  ai_query_types.map do |name|
-    ai_query_type = AiQueryType.find_or_create_by!(name:)
-
-    next if ai_query_type.ai_queries.any?
-
-    AiQuery.create(
-      text: '',
-      json_format: {},
-      draft: true,
-      ai_query_type_id: ai_query_type.id
-    )
+  query_types.map do |name|
+    QueryType.find_or_create_by!(name:)
   end
 end

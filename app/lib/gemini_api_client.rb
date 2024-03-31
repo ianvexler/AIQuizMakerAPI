@@ -33,4 +33,26 @@ class GeminiApiClient
       }
     )
   end
+
+  def test_query(text, json_format)
+    response = @client.request(
+      'generateContent',
+      {
+        contents: {
+          role: 'user',
+          parts: [
+            {
+              text:
+            },
+            {
+              text: "Your response must exactly follow the following format: #{json_format}"
+            }
+          ]
+        }
+      }
+    )
+
+    content = response['candidates'][0]['content']['parts'][0]['text']
+    JSON.parse(content.gsub('=>', ':'))
+  end
 end

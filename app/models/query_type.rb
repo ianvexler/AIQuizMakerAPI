@@ -1,26 +1,27 @@
 # == Schema Information
 #
-# Table name: ai_query_types
+# Table name: query_types
 #
 #  id         :bigint           not null, primary key
 #  name       :string(255)      not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class AiQueryType < ApplicationRecord
-  has_many :ai_queries, dependent: :destroy
+# Indexes
+#
+#  index_query_types_on_name  (name) UNIQUE
+#
+class QueryType < ApplicationRecord
+  has_many :queries, dependent: :destroy
 
-  after_create :set_initial_query
-  before_destroy :check_has_queries?, if: -> { ai_queries.exists? }
+  before_destroy :check_has_queries?, if: -> { queries.exists? }
+
+  validates :name, uniqueness: true
 
   private
 
   def check_has_queries?
     errors.add(:base, 'Cannot delete Query Type with associated Queries')
     throw :abort
-  end
-
-  def set_initial_query
-    ai_queries.create(text: '', json_format: {}, draft: true) unless ai_queries.any?
   end
 end

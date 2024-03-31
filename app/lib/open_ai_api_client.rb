@@ -23,6 +23,34 @@ class OpenAiApiClient
       }
     )
 
+    parse_response(response)
+  end
+
+  def test_query(text, json_format)
+    messages = [
+      { 
+        type: 'text', 
+        text: text
+      }
+      { 
+        type: 'text', 
+        text: "Your response must exactly follow the following format: #{json_format}"
+      }
+    ]
+
+    response = @client.chat(
+      parameters: {
+        model: 'gpt-4',
+        messages: [{ role: 'user', content: messages }]
+      }
+    )
+
+    parse_response(response)
+  end
+
+  private
+
+  def parse_response(response)
     content = response['choices'][0]['message']['content']
     JSON.parse(content)
   end

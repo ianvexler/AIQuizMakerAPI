@@ -11,23 +11,25 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2024_03_30_184055) do
-  create_table "ai_queries", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "queries", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "text", null: false
+    t.string "formatted_text", null: false
     t.text "json_format", size: :long, null: false, collation: "utf8mb4_bin"
     t.boolean "active", default: false
     t.boolean "draft", default: true
     t.integer "version", default: 0
-    t.bigint "ai_query_type_id", null: false
+    t.bigint "query_type_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ai_query_type_id"], name: "index_ai_queries_on_ai_query_type_id"
+    t.index ["query_type_id"], name: "index_queries_on_query_type_id"
     t.check_constraint "json_valid(`json_format`)", name: "json_format"
   end
 
-  create_table "ai_query_types", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "query_types", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_query_types_on_name", unique: true
   end
 
   create_table "quizzes", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -40,5 +42,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_30_184055) do
     t.check_constraint "json_valid(`quiz_data`)", name: "quiz_data"
   end
 
-  add_foreign_key "ai_queries", "ai_query_types"
+  add_foreign_key "queries", "query_types"
 end

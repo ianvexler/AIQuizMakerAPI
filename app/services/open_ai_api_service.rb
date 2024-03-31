@@ -11,4 +11,8 @@ class OpenAiApiService
   def create_quiz(title, goal, instructions)
     @client.create_quiz(title, goal, instructions)
   end
+
+  def test_query(text, json_format)
+    @client.test_query(text, json_format)
+  end
 end
