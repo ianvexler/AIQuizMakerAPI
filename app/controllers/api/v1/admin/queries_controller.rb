@@ -22,6 +22,10 @@ class Api::V1::Admin::QueriesController < ActionController::API
 
   def update
     @query = Query.find(params[:id])
+
+    Rails.logger.debug 'THISISIT'
+    Rails.logger.debug params[:query][:formatted_text]
+
     @query.json_format = params[:query][:json_format].to_json
 
     return render json: @query, each_serializer: QuerySerializer, status: :ok if @query.update(query_params)
@@ -38,8 +42,8 @@ class Api::V1::Admin::QueriesController < ActionController::API
   end
 
   def test
-    text = params[:query][:text]
-    json_format = params[:query][:json_format]
+    text = params[:text]
+    json_format = params[:json_format]
     model = params[:model]
 
     if model == 'gpt'

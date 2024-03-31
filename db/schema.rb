@@ -12,8 +12,8 @@
 
 ActiveRecord::Schema[7.1].define(version: 2024_03_30_184055) do
   create_table "queries", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.string "text", null: false
-    t.string "formatted_text", null: false
+    t.text "text", size: :long, null: false
+    t.text "formatted_text", size: :long, null: false
     t.text "json_format", size: :long, null: false, collation: "utf8mb4_bin"
     t.boolean "active", default: false
     t.boolean "draft", default: true

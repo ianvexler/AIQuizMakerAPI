@@ -1,8 +1,8 @@
 class CreateQuery < ActiveRecord::Migration[7.1]
   def change
     create_table :queries do |t|
-      t.string :text, null: false
-      t.string :formatted_text, null: false
+      t.longtext :text, null: false
+      t.longtext :formatted_text, null: false
       t.json :json_format, null: false
       t.boolean :active, default: false
       t.boolean :draft, default: true

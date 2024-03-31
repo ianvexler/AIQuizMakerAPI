@@ -5,9 +5,9 @@
 #  id             :bigint           not null, primary key
 #  active         :boolean          default(FALSE)
 #  draft          :boolean          default(TRUE)
-#  formatted_text :string(255)      not null
+#  formatted_text :text(4294967295) not null
 #  json_format    :text(4294967295) not null
-#  text           :string(255)      not null
+#  text           :text(4294967295) not null
 #  version        :integer          default(0)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null

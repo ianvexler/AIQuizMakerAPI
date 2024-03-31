@@ -1,5 +1,5 @@
 class QuerySerializer < ActiveModel::Serializer
-  attributes :id, :text, :json_format, :active, :draft, :version
+  attributes :id, :text, :formatted_text, :json_format, :active, :draft, :version
 
   belongs_to :query_type
 

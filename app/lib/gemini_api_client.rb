@@ -53,6 +53,6 @@ class GeminiApiClient
     )
 
     content = response['candidates'][0]['content']['parts'][0]['text']
-    JSON.parse(content.gsub('=>', ':'))
+    JSON.parse(content.gsub('"=>', '":'))
   end
 end
