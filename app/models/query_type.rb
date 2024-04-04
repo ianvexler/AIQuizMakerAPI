@@ -18,6 +18,14 @@ class QueryType < ApplicationRecord
 
   validates :name, uniqueness: true
 
+  def latest_version
+    self.queries.order(version: :desc).first&.version
+  end
+
+  def latest_version_id
+    self.queries.order(version: :desc).first&.id
+  end
+
   private
 
   def check_has_queries?

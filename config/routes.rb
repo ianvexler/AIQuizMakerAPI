@@ -13,15 +13,18 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resource :quizzes, only: [] do
-        post 'gpt', to: 'quizzes#create_gpt', on: :collection
-        post 'gemini', to: 'quizzes#create_gemini', on: :collection
+        collection do
+          post 'gpt', to: 'quizzes#create_gpt'
+          post 'gemini', to: 'quizzes#create_gemini'
+        end
       end
 
       namespace :admin do
-        resources :queries, except: %i[edit] do
-          get 'test', to: 'queries#test', on: :collection
+        resources :query_types, except: %i[show edit] do
+          resources :queries, except: %i[edit], controller: 'query_types/queries' do
+            get 'test', to: 'queries#test', on: :collection
+          end
         end
-        resources :query_types, except: %i[show edit]
       end
     end
   end

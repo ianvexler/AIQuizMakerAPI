@@ -32,6 +32,8 @@ class Query < ApplicationRecord
   validates :json_format, presence: true
   validates :query_type_id, presence: true
 
+  serialize :json_format, JSON
+  
   private
 
   def set_version_number
