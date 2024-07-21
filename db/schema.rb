@@ -95,7 +95,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
 
   create_table "topics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
-    t.string "description"
+    t.text "description"
     t.integer "order"
     t.bigint "course_id"
     t.boolean "archived"

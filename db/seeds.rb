@@ -15,7 +15,23 @@ Rails.logger.debug 'Started seeding'
 Difficulty.names.each_key do |name|
   Difficulty.find_or_create_by!(name:)
 end
-Rails.logger.debug { "Seeded #{Difficulty.count} difficulties" }
+puts "Seeded #{Difficulty.count} difficulties"
+
+organizations = ['Study Seed Demo']
+
+organizations.each do |name|
+  Organization.find_or_create_by!(name: name)
+end
+puts "Seeded #{Organization.count} organizations"
+
+course_groups = ['1st Form Courses']
+
+course_groups.each do |course_group_name|
+  CourseGroup.find_or_create_by!(name: course_group_name) do |cg|
+    cg.organization = Organization.all.sample(1).first
+  end
+end
+puts "Seeded #{CourseGroup.count} course groups"
 
 courses_data = {
   'Maths' => {
@@ -75,18 +91,18 @@ courses_data.each do |course_name, course_info|
   course = Course.find_or_create_by!(name: course_name) do |c|
     c.description = course_info[:description]
     c.is_private = false
+    c.course_group = CourseGroup.all.sample(1).first
   end
 
   course_info[:topics].each_with_index do |description, index|
     # Extract the topic name and description
     topic_name, topic_description = description.split(': ', 2)
 
-    Topic.find_or_create_by!(
-      name: topic_name,
-      description: topic_description,
-      course_id: course.id,
-      order: index + 1
-    )
+    Topic.find_or_create_by!(name: topic_name) do |t| 
+      t.description = topic_description
+      t.course = course
+      t.order = index + 1
+    end
   end
 end
-Rails.logger.debug { "Seeded #{Course.count} courses and #{Topic.count} topics." }
+puts "Seeded #{Course.count} courses and #{Topic.count} topics."

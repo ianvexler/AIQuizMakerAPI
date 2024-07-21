@@ -4,7 +4,7 @@
 #
 #  id          :bigint           not null, primary key
 #  archived    :boolean
-#  description :string(255)
+#  description :text(65535)
 #  name        :string(255)      not null
 #  order       :integer
 #  created_at  :datetime         not null
