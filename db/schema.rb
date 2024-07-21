@@ -23,7 +23,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
 
   create_table "courses", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
-    t.string "description"
+    t.text "description"
     t.string "overview"
     t.boolean "is_private", default: true
     t.boolean "archived", default: false
