@@ -11,14 +11,26 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
+  create_table "course_groups", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.string "name", null: false
+    t.boolean "archived", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "organization_id"], name: "index_course_groups_on_name_and_organization_id", unique: true
+    t.index ["organization_id"], name: "index_course_groups_on_organization_id"
+  end
+
   create_table "courses", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
     t.string "overview"
     t.boolean "is_private", default: true
     t.boolean "archived", default: false
+    t.bigint "course_group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["course_group_id"], name: "index_courses_on_course_group_id"
   end
 
   create_table "difficulties", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -26,6 +38,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_difficulties_on_name", unique: true
+  end
+
+  create_table "organizations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "overview"
+    t.boolean "archived", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "question_options", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -86,6 +106,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
     t.index ["order", "course_id"], name: "index_topics_on_order_and_course_id", unique: true
   end
 
+  add_foreign_key "course_groups", "organizations"
+  add_foreign_key "courses", "course_groups"
   add_foreign_key "question_options", "questions"
   add_foreign_key "questions", "difficulties"
   add_foreign_key "quiz_difficulties", "difficulties"

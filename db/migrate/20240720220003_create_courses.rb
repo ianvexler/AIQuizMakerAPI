@@ -6,7 +6,7 @@ class CreateCourses < ActiveRecord::Migration[7.1]
       t.string :overview
       t.boolean :is_private, default: true
       t.boolean :archived, default: false
-      r.references :course_group, null: false, foreign_key: true
+      t.references :course_group, null: false, foreign_key: true
 
       t.timestamps
     end

@@ -13,6 +13,7 @@
 #
 class Difficulty < ApplicationRecord
   has_many :quizzes, through: :quiz_difficulties
+  has_many :questions, dependent: :restrict_with_exception
 
   enum name: {
     beginner: 'Beginner',

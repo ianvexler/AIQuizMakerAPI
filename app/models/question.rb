@@ -21,5 +21,5 @@
 #
 class Question < ApplicationRecord
   belongs_to :difficulty
-  has_many :question_options
+  has_many :question_options, dependent: :restrict_with_exception
 end
