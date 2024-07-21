@@ -12,10 +12,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :quizzes, only: [] do
-        post 'gpt', to: 'quizzes#create_gpt', on: :collection
-        post 'gemini', to: 'quizzes#create_gemini', on: :collection
-      end
+      resource :quizzes, only: %i[create]
     end
   end
 

@@ -1,6 +1,12 @@
 class Api::V1::QuizzesController < ActionController::API
   rescue_from Faraday::BadRequestError, with: :handle_bad_request
 
+  def create
+    
+  end
+
+  private
+
   def create_gemini
     @gemini_api_client = GeminiApiService.instance
 
