@@ -3,20 +3,21 @@ class QuizGeneratorService
     @topics = topics.shuffle
     @difficulties = difficulties
     @type = type
+    @length = length
   end
 
-  def generate_quiz(length)
-    return nil if length <= 0
+  def generate_quiz
+    return nil if @length <= 0
 
     @quiz = Quiz.new(
-      length: length,
+      length: @length,
       topics: @topics,
       difficulties: @difficulties,
       type: @type
     )
 
-    questions_per_topic = length / @topics.count
-    extra_questions = length % @topics.count
+    questions_per_topic = @length / @topics.count
+    extra_questions = @length % @topics.count
 
     generate_questions(questions_per_topic)
     distribute_remaining_questions(extra_questions)

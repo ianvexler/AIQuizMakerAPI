@@ -2,10 +2,27 @@ class Api::V1::QuizzesController < ActionController::API
   rescue_from Faraday::BadRequestError, with: :handle_bad_request
 
   def create
-    
+    quiz_generator = QuizGeneratorService.instance(
+      quiz_params[:topics], 
+      quiz_params[:difficulties],
+      quiz_params[:type],
+      quiz_params[:length]
+    )
+
+    quiz = quiz_generator.generate_quiz
+
+    if quiz.present?
+      render json: { quiz: @quiz }, status: :ok if @quiz.save
+    end
+
+    render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
   end
 
   private
+
+  def quiz_params
+    params.require(:quiz).permit(:topics, :difficulties, :type)
+  end
 
   def create_gemini
     @gemini_api_client = GeminiApiService.instance
