@@ -127,8 +127,9 @@ GEM
       railties (>= 5.0.0)
     faker (3.2.3)
       i18n (>= 1.8.11, < 2)
-    faraday (2.9.0)
+    faraday (2.10.0)
       faraday-net_http (>= 2.0, < 3.2)
+      logger
     faraday-multipart (1.0.4)
       multipart-post (~> 2)
     faraday-net_http (3.1.0)
@@ -136,10 +137,10 @@ GEM
     faraday-typhoeus (1.1.0)
       faraday (~> 2.0)
       typhoeus (~> 1.4)
-    ffi (1.16.3)
-    gemini-ai (3.2.0)
+    ffi (1.17.0-x86_64-linux-gnu)
+    gemini-ai (4.2.0)
       event_stream_parser (~> 1.0)
-      faraday (~> 2.9)
+      faraday (~> 2.10)
       faraday-typhoeus (~> 1.1)
       googleauth (~> 1.8)
       typhoeus (~> 1.4, >= 1.4.1)
@@ -161,9 +162,10 @@ GEM
       rdoc
       reline (>= 0.4.2)
     json (2.7.1)
-    jwt (2.8.1)
+    jwt (2.8.2)
       base64
     language_server-protocol (3.17.0.3)
+    logger (1.6.0)
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -380,7 +382,7 @@ DEPENDENCIES
   devise_invitable (~> 2.0.0)
   factory_bot_rails
   faker
-  gemini-ai (~> 3.2.0)
+  gemini-ai (~> 4.2.0)
   mysql2 (~> 0.5)
   puma (>= 5.0)
   rails (~> 7.1.3)

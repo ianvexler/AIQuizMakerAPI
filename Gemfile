@@ -15,7 +15,7 @@ gem 'rubocop', '~> 1.62', require: false
 gem 'sidekiq'
 gem 'tzinfo-data', platforms: %i[windows jruby]
 gem 'singleton'
-gem 'gemini-ai', '~> 3.2.0'
+gem 'gemini-ai', '~> 4.2.0'
 gem "ruby-openai"
 
 group :development, :test do

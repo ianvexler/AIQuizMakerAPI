@@ -18,5 +18,5 @@
 #  fk_rails_...  (question_id => questions.id)
 #
 class QuestionOption < ApplicationRecord
-  
+  belongs_to :question_id
 end

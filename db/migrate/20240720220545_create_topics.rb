@@ -6,6 +6,8 @@ class CreateTopics < ActiveRecord::Migration[7.1]
       t.integer :order
       t.references :course, foreign_key: true
       t.boolean :archived
+      t.index [:name, :course_id], unique: true
+      t.index [:order, :course_id], unique: true
       
       t.timestamps
     end

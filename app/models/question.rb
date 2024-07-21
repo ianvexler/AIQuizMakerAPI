@@ -20,5 +20,6 @@
 #  fk_rails_...  (difficulty_id => difficulties.id)
 #
 class Question < ApplicationRecord
-  
+  belongs_to :difficulty
+  has_many :question_options
 end

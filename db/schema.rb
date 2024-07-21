@@ -15,8 +15,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
     t.string "name", null: false
     t.string "description"
     t.string "overview"
-    t.boolean "private"
-    t.boolean "archived"
+    t.boolean "is_private", default: true
+    t.boolean "archived", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -25,6 +25,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_difficulties_on_name", unique: true
   end
 
   create_table "question_options", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -59,7 +60,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
   create_table "quizzes", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "type", null: false
     t.integer "length", default: 10
-    t.string "difficulty", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -82,6 +82,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_topics_on_course_id"
+    t.index ["name", "course_id"], name: "index_topics_on_name_and_course_id", unique: true
+    t.index ["order", "course_id"], name: "index_topics_on_order_and_course_id", unique: true
   end
 
   add_foreign_key "question_options", "questions"

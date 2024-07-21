@@ -1,0 +1,11 @@
+class CreateOrganizations < ActiveRecord::Migration[7.1]
+  def change
+    create_table :organizations do |t|
+      t.string :name, null: false
+      t.string :overview
+      t.boolean :archived, default: false
+
+      t.timestamps
+    end
+  end
+end
