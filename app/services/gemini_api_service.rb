@@ -4,7 +4,7 @@ class GeminiApiService
   include Singleton
 
   def initialize
-    api_key = ENV.fetch('GOOGLE_API_KEY').strip
+    api_key = ENV.fetch('GEMINI_API_KEY').strip
     @client = GeminiApiClient.new(api_key)
   end
 

@@ -3,7 +3,7 @@ class Api::V1::QuizzesController < ActionController::API
 
   def create
     quiz_generator = QuizGeneratorService.instance(
-      quiz_params[:topics], 
+      quiz_params[:topics],
       quiz_params[:difficulties],
       quiz_params[:type],
       quiz_params[:length]
@@ -11,9 +11,7 @@ class Api::V1::QuizzesController < ActionController::API
 
     quiz = quiz_generator.generate_quiz
 
-    if quiz.present?
-      render json: { quiz: @quiz }, status: :ok if @quiz.save
-    end
+    render json: { quiz: @quiz }, status: :ok if quiz.present? && @quiz.save
 
     render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
   end
