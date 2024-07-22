@@ -8,8 +8,11 @@ class GeminiApiService
     @client = GeminiApiClient.new(api_key)
   end
 
-  def create_quiz(quiz_title)
-    quiz_query = "Make a Quiz about #{quiz_title}"
-    @client.create_quiz(quiz_query)
+  def create_question(topic, difficulty)
+    @client.create_question(topic, difficulty)
+  end
+
+  def validate_question(topic, difficulty, question_data)
+    @client.validate_question(topic, difficulty, question_data)
   end
 end

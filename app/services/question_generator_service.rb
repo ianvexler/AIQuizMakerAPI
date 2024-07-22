@@ -13,7 +13,7 @@ class QuestionGeneratorService
 
     # Validate and repeat until validation passes
     while is_valid == false
-      question_data = @gemini_api_client.validate_question(question_data)
+      question_data = @gemini_api_client.validate_question(@topic, @difficulty, question_data)
       is_valid = question_data[:is_valid]
     end
 
