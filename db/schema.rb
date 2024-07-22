@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_22_161353) do
   create_table "course_groups", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.string "name", null: false
@@ -77,8 +77,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
     t.index ["quiz_id"], name: "index_quiz_difficulties_on_quiz_id"
   end
 
+  create_table "quiz_questions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "quiz_id", null: false
+    t.bigint "question_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["question_id"], name: "index_quiz_questions_on_question_id"
+    t.index ["quiz_id"], name: "index_quiz_questions_on_quiz_id"
+  end
+
   create_table "quizzes", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.string "type", null: false
+    t.string "quiz_type", null: false
     t.integer "length", default: 10
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -112,6 +121,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_20_223726) do
   add_foreign_key "questions", "difficulties"
   add_foreign_key "quiz_difficulties", "difficulties"
   add_foreign_key "quiz_difficulties", "quizzes"
+  add_foreign_key "quiz_questions", "questions"
+  add_foreign_key "quiz_questions", "quizzes"
   add_foreign_key "topic_quizzes", "quizzes"
   add_foreign_key "topic_quizzes", "topics"
   add_foreign_key "topics", "courses"

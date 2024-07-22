@@ -1,5 +1,5 @@
 class QuizGeneratorService
-  def initialize(topics, difficulties, type)
+  def initialize(topics, difficulties, type, length)
     @topics = topics.shuffle
     @difficulties = difficulties
     @type = type
@@ -13,7 +13,7 @@ class QuizGeneratorService
       length: @length,
       topics: @topics,
       difficulties: @difficulties,
-      type: @type
+      quiz_type: @type
     )
 
     questions_per_topic = @length / @topics.count
@@ -31,7 +31,7 @@ class QuizGeneratorService
   def generate_questions(questions_per_topic)
     @topics.each do |topic|
       questions_per_topic.times do
-        question_generator = QuestionGeneratorService.instance(topic, @difficulties.sample)
+        question_generator = QuestionGeneratorService.new(topic, @difficulties.sample)
         question = question_generator.generate_question
         @quiz.questions << question
       end
@@ -40,7 +40,7 @@ class QuizGeneratorService
 
   def distribute_remaining_questions(remaining_questions)
     remaining_questions.times do
-      question_generator = QuestionGeneratorService.instance(@topics.sample, @difficulties.sample)
+      question_generator = QuestionGeneratorService.new(@topics.sample, @difficulties.sample)
       question = question_generator.generate_question
       @quiz.questions << question
     end

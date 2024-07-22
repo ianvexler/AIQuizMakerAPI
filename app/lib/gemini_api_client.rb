@@ -1,4 +1,5 @@
 require 'gemini-ai'
+require 'faraday'
 
 class GeminiApiClient
   def initialize(api_key)
@@ -12,8 +13,6 @@ class GeminiApiClient
         server_sent_events: false
       }
     )
-
-    self.class.rescue_from(Faraday::BadRequestError, with: :handle_bad_request)
   end
 
   def create_question(topic, difficulty)
@@ -74,16 +73,12 @@ class GeminiApiClient
     JSON.parse(response_string_clean)
   end
 
-  def handle_bad_request(exception)
-    response = {
-      message: exception.message,
-      body: exception.response[:body]
-    }
-  end
-
   def with_error_handling
     yield
-  rescue BadRequest => e
-    handle_bad_request(e)
+  rescue Faraday::Error => e
+    {
+      message: e.message,
+      body: e.response[:body]
+    }
   end
 end
