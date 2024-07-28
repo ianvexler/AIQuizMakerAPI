@@ -24,6 +24,8 @@
 class Topic < ApplicationRecord
   belongs_to :course
   has_many :quizzes, through: :topic_quizzes
+  has_many :user_topics, dependent: :destroy
+  has_many :users, through: :user_topics
 
   validates :name, uniqueness: { scope: :course_id }
   validates :order, uniqueness: { scope: :course_id }

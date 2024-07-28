@@ -23,4 +23,6 @@
 class Course < ApplicationRecord
   has_many :topic, dependent: :restrict_with_exception
   belongs_to :course_group
+  has_many :enrolments, dependent: :destroy
+  has_many :users, through: enrolments
 end
