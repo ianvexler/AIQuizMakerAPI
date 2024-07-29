@@ -7,7 +7,7 @@ Difficulty.names.each_key do |name|
 end
 Rails.logger.debug { "Seeded #{Difficulty.count} difficulties" }
 
-organizations = ['Study Seed Demo']
+organizations = ['Study Seed']
 
 organizations.each do |name|
   Organization.find_or_create_by!(name:)

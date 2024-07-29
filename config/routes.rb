@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  devise_for :users
+  # Devise authentication.
+  devise_for :users, path: 'user'
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -13,7 +15,15 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :quizzes, only: %i[create]
+      resource :auth, controller: :sessions, only: %i[create destroy] do
+        post :signup
+        patch :refresh
+      end
+
+      resources :courses, only: %i[index] do
+        resources :topics, only: %i[index]
+      end
+      resources :quizzes, only: %i[create]
     end
   end
 

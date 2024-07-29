@@ -22,5 +22,6 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Enrolment < ApplicationRecord
-  belongs_to :user_id
+  belongs_to :user
+  belongs_to :course
 end

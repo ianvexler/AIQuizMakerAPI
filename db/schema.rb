@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_26_160210) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_29_131346) do
   create_table "course_groups", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.string "name", null: false
@@ -172,9 +172,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_26_160210) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "organization_id"
+    t.string "jti", null: false
+    t.string "rt"
+    t.datetime "exp"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["exp"], name: "index_users_on_exp"
+    t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["rt"], name: "index_users_on_rt"
   end
 
   add_foreign_key "course_groups", "organizations"

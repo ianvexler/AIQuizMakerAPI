@@ -21,8 +21,8 @@
 #  fk_rails_...  (course_group_id => course_groups.id)
 #
 class Course < ApplicationRecord
-  has_many :topic, dependent: :restrict_with_exception
+  has_many :topics, dependent: :restrict_with_exception
   belongs_to :course_group
   has_many :enrolments, dependent: :destroy
-  has_many :users, through: enrolments
+  has_many :users, through: :enrolments
 end

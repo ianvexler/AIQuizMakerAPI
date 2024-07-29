@@ -11,4 +11,5 @@
 #
 class Organization < ApplicationRecord
   has_many :users, dependent: :destroy
+  has_many :course_groups, dependent: :destroy
 end
