@@ -31,32 +31,8 @@ docker compose version
 ```shell
 ./run stack
 ```
+
 ## Notes
 
-To Create a Quiz use the endpoint
-
-```shell
-http://localhost:3000/api/v1/quizzes/gemini (To use gemini)
-
-http://localhost:3000/api/v1/quizzes/gpt (To use gpt-4)
-```
-
-With a request format e.g.
-
-```shell
-{
-    "quiz": {
-        "title": "ALevel Derivatives Exam",
-        "goal": "To prove understanding on ALevel difficulty derivative questions",
-        "instructions": "Make the last question difficult"
-    }
-}
-```
-
-To view the quiz generated from the response of this request using axios look for:
-
-```shell
-response.data.quiz.quiz_data
-```
-
-This is the JSON response by gemini in a string format. Make sure to parse it into a JSON format. 
+Free trials are not included in every country for Gemini API, therefore using a VPN and connecting to a country with a free trial (e.g. USA) might be required 
+ 
