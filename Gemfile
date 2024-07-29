@@ -6,16 +6,18 @@ ruby '3.3.0'
 
 gem 'rails', '~> 7.1.3'
 
+gem 'active_model_serializers'
 gem 'bootsnap', require: false
 gem 'devise'
 gem 'devise_invitable', '~> 2.0.0'
+gem 'devise-jwt'
 gem 'mysql2', '~> 0.5'
 gem 'puma', '>= 5.0'
 gem 'rubocop', '~> 1.62', require: false
 gem 'sidekiq'
 gem 'tzinfo-data', platforms: %i[windows jruby]
 gem 'singleton'
-gem 'gemini-ai', '~> 3.2.0'
+gem 'gemini-ai', '~> 4.2.0'
 gem "ruby-openai"
 
 group :development, :test do

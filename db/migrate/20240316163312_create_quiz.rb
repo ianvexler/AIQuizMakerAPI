@@ -3,10 +3,8 @@
 class CreateQuiz < ActiveRecord::Migration[7.1]
   def change
     create_table :quizzes do |t|
-      t.string :title, null: false
-      t.string :goal
-      t.string :instructions
-      t.json :quiz_data, null: false
+      t.string :quiz_type, null: false
+      t.integer :length, default: 10
       
       t.timestamps
     end

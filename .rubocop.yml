@@ -36,6 +36,7 @@ Layout/LineLength:
     - config/*
     - app/lib/gemini_api_client.rb
     - app/lib/open_ai_api_client.rb
+    - db/seeds.rb
 Metrics/ClassLength:
   Max: 500
 Metrics/BlockLength:
