@@ -11,7 +11,6 @@ gem 'bootsnap', require: false
 gem 'devise'
 gem 'devise_invitable', '~> 2.0.0'
 gem 'devise-jwt'
-gem 'mysql2', '~> 0.5'
 gem 'puma', '>= 5.0'
 gem 'rubocop', '~> 1.62', require: false
 gem 'sidekiq'
@@ -24,6 +23,7 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'rspec-rails'
+  gem 'mysql2'
 end
 
 group :development do
@@ -38,4 +38,8 @@ group :test do
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'webdrivers'
+end
+
+group :production do
+  gem 'pg'
 end

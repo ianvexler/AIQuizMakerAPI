@@ -1,26 +1,28 @@
 FROM ruby:3.3.0-slim-bullseye AS base
 
-RUN apt-get update && apt-get install libjemalloc2 && rm -rf /var/lib/apt/lists/*
+# Install jemalloc
+RUN apt-get update && apt-get install -y --no-install-recommends libjemalloc2 && rm -rf /var/lib/apt/lists/*
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 WORKDIR /app
 
+# Install necessary dependencies for MySQL (development) and PostgreSQL (production)
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends build-essential curl \
-  && curl -sSL https://deb.nodesource.com/setup_16.x | bash - \
-  && curl -sSL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-  && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-  && apt-get install -y --no-install-recommends build-essential curl \
-  && apt-get update && apt-get install -y --no-install-recommends nodejs default-libmysqlclient-dev \
+  && apt-get install -y --no-install-recommends \
+  build-essential \
+  curl \
+  libpq-dev \
+  default-libmysqlclient-dev \
+  nodejs \
+  yarn \
   && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
   && apt-get clean \
   && useradd --create-home ruby \
-  && chown ruby:ruby -R /app \
-  && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
+  && chown ruby:ruby -R /app
 
 USER ruby
 
-# Bundle etc
+# Bundle install
 COPY --chown=ruby:ruby Gemfile* ./
 RUN bundle install --jobs "$(nproc)"
 
@@ -38,6 +40,7 @@ ENV RAILS_ENV="${RAILS_ENV}" \
 
 COPY --chown=ruby:ruby . .
 
+# Precompile assets if not in development
 RUN if [ "${RAILS_ENV}" != "development" ]; then \
   SECRET_KEY_BASE=dummyvalue \
   NO_SECRETS=1 \

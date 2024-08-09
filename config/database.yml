@@ -9,7 +9,7 @@
 # And be sure to use new-style password hashing:
 #   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
 #
-default: &default
+default: &mysql_default
   adapter: mysql2
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -18,38 +18,26 @@ default: &default
   socket: localhost
 
 development:
-  <<: *default
+  <<: *mysql_default
   database: ai_quiz_maker_api_development
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 test:
-  <<: *default
+  <<: *mysql_default
   database: ai_quiz_maker_api_test
 
-# As with config/credentials.yml, you never want to store sensitive information,
-# like your database password, in your source code. If your source code is
-# ever seen by anyone, they now have access to your database.
+# PostgreSQL configuration for production
+# Install the PostgreSQL driver
+#   gem install pg
 #
-# Instead, provide the password or a full connection URL as an environment
-# variable when you boot the app. For example:
-#
-#   DATABASE_URL="mysql2://myuser:mypass@localhost/somedatabase"
-#
-# If the connection URL is provided in the special DATABASE_URL environment
-# variable, Rails will automatically merge its configuration values on top of
-# the values provided in this file. Alternatively, you can specify a connection
-# URL environment variable explicitly:
-#
-#   production:
-#     url: <%= ENV["MY_APP_DATABASE_URL"] %>
-#
-# Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
-# for a full overview on how database connection configuration can be specified.
-#
+# Ensure the PostgreSQL gem is defined in your Gemfile
+#   gem "pg"
+
 production:
-  <<: *default
-  database: ai_quiz_maker_api_production
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: ai_quiz_maker_api
   password: <%= ENV["AI_QUIZ_MAKER_API_DATABASE_PASSWORD"] %>
+  host: localhost # or your production database host
+  database: ai_quiz_maker_api_production
+  port: 5432 # default PostgreSQL port, adjust if necessary
