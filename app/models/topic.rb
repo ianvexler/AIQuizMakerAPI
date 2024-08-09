@@ -29,4 +29,14 @@ class Topic < ApplicationRecord
 
   validates :name, uniqueness: { scope: :course_id }
   validates :order, uniqueness: { scope: :course_id }
+
+  scope :not_archived, -> { where(archived: false) }
+
+  before_save :generate_order
+
+  def generate_order
+    return if order.present?
+
+    self.order = course.topics.count + 1
+  end
 end

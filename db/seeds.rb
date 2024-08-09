@@ -95,4 +95,19 @@ courses_data.each do |course_name, course_info|
     end
   end
 end
+
+# Temporary for demo
+demo_cg = CourseGroup.create(
+  organization_id: Organization.all.sample(1).first.id,
+  name: 'Demo course group',
+  archived: true
+)
+
+Course.create(
+  name: 'Demo Course',
+  is_private: true,
+  archived: true,
+  course_group_id: demo_cg.id
+)
+
 Rails.logger.debug { "Seeded #{Course.count} courses and #{Topic.count} topics." }

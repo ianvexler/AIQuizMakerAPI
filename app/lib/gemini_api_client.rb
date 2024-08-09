@@ -1,5 +1,6 @@
 require 'gemini-ai'
 require 'faraday'
+require 'base64'
 
 class GeminiApiClient
   def initialize(api_key)
@@ -9,7 +10,7 @@ class GeminiApiClient
         api_key:
       },
       options: {
-        model: 'gemini-pro',
+        model: 'gemini-1.5-flash',
         server_sent_events: false
       }
     )
@@ -49,6 +50,38 @@ class GeminiApiClient
               },
               {
                 text: "Topic: #{topic.name}, Difficulty: #{difficulty.name}, Description: #{topic.description}, Question JSON: #{question_data.to_json}"
+              }
+            ]
+          }
+        }
+      )
+
+      parse_response(response)
+    end
+  end
+
+  def create_quiz_from_file(topic, file, length)
+    file_content = file.read
+    base64_encoded_file = Base64.strict_encode64(file_content)
+
+    with_error_handling do
+      response = @client.stream_generate_content(
+        {
+          contents: {
+            role: 'user',
+            parts: [
+              {
+                text: "You are a quiz where the user will pass the following parameters and you have to generate a set of questions based on them. Parameters: file, topic (name of the topic), context (optional), length. The question should be based as much as possible in these parameters. Your response has to follow a JSON output following the instructions below. Each question should have 4 answers related to it. The questions should be based on the file example provided.\n\nThe JSON output should follow the following format. For quiz: topic (the topic provided in the prompt), lenght (how many questions), questions (an array with all questions). For questions: content (content of the question), tags, options and confidence (percentage of how confident you are that the response is correct). Each of the options should have the following format: value (the content or value of the response), is_correct (if the answer is the correct answer).\n\nAfter generating the question you have to verify that the answer is correct before returning an output. If the answer is incorrect, you have to do any changes required to the question and/or answers so that it provides a valid response. This is very important so you can take as much time as possible.\n"
+              },
+              {
+                text: "Topic: #{topic}, Length: #{length}"
+              },
+              {
+                inline_data:
+                  {
+                    mime_type: file.content_type,
+                    data: base64_encoded_file
+                  }
               }
             ]
           }

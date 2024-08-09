@@ -19,6 +19,12 @@ class QuestionGeneratorService
       is_valid = question_data[:is_valid]
     end
 
+    build_question(question_data)
+  end
+
+  private
+
+  def build_question(question_data)
     # Create question after validation
     question = Question.new(
       content: question_data['content'],
@@ -35,7 +41,6 @@ class QuestionGeneratorService
       question.question_options << question_option
     end
 
-    question.save
     question
   end
 end

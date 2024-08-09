@@ -18,7 +18,6 @@ cp .env.example .env
 
 2. Add API Keys in `.env`
     - Add your Google API Key to `GOOGLE_API_KEY`. For more details view [Google Help](https://support.google.com/googleapi/answer/6158862?hl=en).
-    - Add your OpenAI API Key to `OPEN_AI_API_KEY`. This requires ChatGpt Plus & credits. For more details follow initial steps in [Setting Up GPT-4 with OpenAI API]([https://support.google.com/googleapi/answer/6158862?hl=en](https://wandb.ai/onlineinference/gpt-python/reports/Setting-Up-GPT-4-In-Python-Using-the-OpenAI-API--VmlldzozODI1MjY4)).
 
 4. Make sure you use `Docker Compose V2`:
 

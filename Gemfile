@@ -18,7 +18,6 @@ gem 'sidekiq'
 gem 'tzinfo-data', platforms: %i[windows jruby]
 gem 'singleton'
 gem 'gemini-ai', '~> 4.2.0'
-gem "ruby-openai"
 
 group :development, :test do
   gem 'debug', platforms: %i[mri mingw x64_mingw]

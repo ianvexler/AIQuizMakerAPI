@@ -2,7 +2,7 @@ class Api::V1::TopicsController < Api::V1::BaseController
   before_action :set_course, only: [:index]
 
   def index
-    @topics = @course.topics
+    @topics = @course.topics.not_archived
 
     render json: { topics: @topics }, status: :ok
   end

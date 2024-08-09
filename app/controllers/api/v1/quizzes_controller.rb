@@ -17,54 +17,22 @@ class Api::V1::QuizzesController < Api::V1::BaseController
     render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
   end
 
+  def create_from_file
+    @gemini_api_service = GeminiApiService.instance
+
+    @quiz = @gemini_api_service.create_quiz_from_file(params[:topic], params[:file], params[:length])
+
+    return render json: @quiz, serializer: QuizSerializer, status: :ok if @quiz.present? && @quiz.save
+
+    Rails.logger.debug @quiz.errors.to_json
+
+    render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
+  end
+
   private
 
   def quiz_params
     params.require(:quiz).permit(:type, :length, topics: [], difficulties: [])
-  end
-
-  def create_gemini
-    @gemini_api_client = GeminiApiService.instance
-
-    quiz_params = params[:quiz]
-
-    @quiz_data = @gemini_api_client.create_quiz(quiz_params[:title])
-
-    if @quiz_data.present?
-      @quiz = Quiz.new(
-        title: quiz_params[:title],
-        goal: quiz_params[:goal],
-        instructions: quiz_params[:instructions],
-        quiz_data: @quiz_data.to_json
-      )
-
-      return render json: { quiz: @quiz }, status: :ok if @quiz.save
-    end
-
-    render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
-  end
-
-  def create_gpt
-    @open_ai_api_client = OpenAiApiService.instance
-
-    quiz_params = params[:quiz]
-
-    @quiz_data = @open_ai_api_client.create_quiz(
-      quiz_params[:title], quiz_params[:goal], quiz_params[:instructions]
-    )
-
-    if @quiz_data.present?
-      @quiz = Quiz.new(
-        title: quiz_params[:title],
-        goal: quiz_params[:goal],
-        instructions: quiz_params[:instructions],
-        quiz_data: @quiz_data.to_json
-      )
-
-      return render json: { quiz: @quiz }, status: :ok if @quiz.save
-    end
-
-    render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
   end
 
   def handle_bad_request(exception)

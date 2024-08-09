@@ -25,4 +25,6 @@ class Course < ApplicationRecord
   belongs_to :course_group
   has_many :enrolments, dependent: :destroy
   has_many :users, through: :enrolments
+
+  scope :not_archived, -> { where(archived: false) }
 end

@@ -23,7 +23,11 @@ Rails.application.routes.draw do
       resources :courses, only: %i[index] do
         resources :topics, only: %i[index]
       end
-      resources :quizzes, only: %i[create]
+      resources :quizzes, only: %i[create] do
+        collection do
+          post :create_from_file
+        end
+      end
     end
   end
 
