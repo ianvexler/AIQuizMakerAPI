@@ -20,7 +20,7 @@ Rails.application.routes.draw do
         patch :refresh
       end
 
-      resources :courses, only: %i[index] do
+      resources :courses, only: %i[index show] do
         resources :topics, only: %i[index]
       end
       resources :quizzes, only: %i[create] do
