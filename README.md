@@ -1,5 +1,9 @@
 # AIQuizMakerAPI
 
+This repository contains the API for Study Seed
+
+## To run the project
+
 To work locally with the API use this as the base URL:
 
 ```shell
