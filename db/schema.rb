@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_11_124619) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_11_172720) do
   create_table "course_groups", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.string "name", null: false
@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_11_124619) do
     t.bigint "course_group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "icon"
     t.index ["course_group_id"], name: "index_courses_on_course_group_id"
   end
 

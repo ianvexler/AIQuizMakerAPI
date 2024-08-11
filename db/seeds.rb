@@ -26,6 +26,7 @@ Rails.logger.debug { "Seeded #{CourseGroup.count} course groups" }
 courses_data = {
   'Maths' => {
     description: 'The study of numbers, quantities, shapes, and patterns, exploring concepts such as algebra, geometry, calculus, and statistics.',
+    icon: 'calculator',
     topics: [
       'Fractions and Decimals: Understanding and converting between fractions, decimals, and percentages.',
       'Basic Algebra: Introduction to variables, simple equations, and solving for unknowns.',
@@ -36,6 +37,7 @@ courses_data = {
   },
   'Physics' => {
     description: 'The science of matter, energy, and the interactions between them, covering topics like mechanics, thermodynamics, electromagnetism, and quantum physics.',
+    icon: 'physics',
     topics: [
       'Forces and Motion: Basic principles of motion, speed, velocity, and Newton’s laws of motion.',
       'Energy: Different forms of energy, energy transfer, and conservation of energy.',
@@ -46,6 +48,7 @@ courses_data = {
   },
   'Chemistry' => {
     description: 'The study of substances, their properties, compositions, and reactions, focusing on elements, compounds, and chemical processes.',
+    icon: 'chemistry-02',
     topics: [
       'Atoms and Molecules: Basic structure of atoms, elements, and the periodic table.',
       'Chemical Reactions: Simple chemical reactions, reactants, products, and conservation of mass.',
@@ -56,6 +59,7 @@ courses_data = {
   },
   'Biology' => {
     description: 'The science of life and living organisms, examining their structure, function, growth, evolution, and interactions with the environment.',
+    icon: 'plant-01',
     topics: [
       'Cell Structure and Function: Basic cell parts (nucleus, cytoplasm, cell membrane) and their functions.',
       'Human Body Systems: Overview of major systems (digestive, respiratory, circulatory, nervous) and their functions.',
@@ -66,6 +70,7 @@ courses_data = {
   },
   'History' => {
     description: 'The study of past events, societies, and civilizations, analyzing historical documents, artifacts, and other sources to understand human development over time.',
+    icon: 'book-bookmark-02',
     topics: [
       'Ancient Civilizations: Overview of ancient Egypt, Greece, and Rome.',
       'Middle Ages: Life in medieval times, feudalism, and significant events like the Black Plague.',
@@ -78,11 +83,12 @@ courses_data = {
 
 courses_data.each do |course_name, course_info|
   # Find or create the course
-  course = Course.find_or_create_by!(name: course_name) do |c|
-    c.description = course_info[:description]
-    c.is_private = false
-    c.course_group = CourseGroup.all.sample(1).first
-  end
+  course = Course.find_or_initialize_by(name: course_name)
+  course.description = course_info[:description]
+  course.is_private = false
+  course.course_group = CourseGroup.all.sample(1).first
+  course.icon = course_info[:icon]
+  course.save
 
   course_info[:topics].each_with_index do |description, index|
     # Extract the topic name and description
@@ -97,13 +103,13 @@ courses_data.each do |course_name, course_info|
 end
 
 # Temporary for demo
-demo_cg = CourseGroup.create(
+demo_cg = CourseGroup.find_or_create_by!(
   organization_id: Organization.all.sample(1).first.id,
   name: 'Demo course group',
   archived: true
 )
 
-Course.create(
+Course.find_or_create_by!(
   name: 'Demo Course',
   is_private: true,
   archived: true,

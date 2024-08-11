@@ -5,6 +5,7 @@
 #  id              :bigint           not null, primary key
 #  archived        :boolean          default(FALSE)
 #  description     :text(65535)
+#  icon            :string(255)
 #  is_private      :boolean          default(TRUE)
 #  name            :string(255)      not null
 #  overview        :string(255)
