@@ -1,6 +1,12 @@
 class Api::V1::QuizzesController < Api::V1::BaseController
   rescue_from Faraday::BadRequestError, with: :handle_bad_request
 
+  def show
+    @quiz = Quiz.find(params[:id])
+
+    render json: @quiz, serializer: QuizSerializer, status: :ok
+  end
+
   def create
     quiz_generator = QuizGeneratorService.new(
       quiz_params[:topics],
@@ -12,7 +18,7 @@ class Api::V1::QuizzesController < Api::V1::BaseController
     @quiz = quiz_generator.generate_quiz
     @quiz.users << current_user
 
-    return render json: @quiz, serializer: QuizSerializer, status: :ok if @quiz.present? && @quiz.save
+    return render json: { id: @quiz.id }, status: :ok if @quiz.present? && @quiz.save
 
     render json: { errors: 'There was an error generating the quiz' }, status: :bad_request
   end
