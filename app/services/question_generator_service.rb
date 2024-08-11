@@ -1,10 +1,12 @@
 class QuestionGeneratorService
-  def initialize(topic, difficulty)
+  def initialize(topic, difficulty, user)
     @topic = topic
     @difficulty = difficulty
+    @user = user
   end
 
   def generate_question(other_questions)
+    
     @gemini_api_client = GeminiApiService.instance
 
     question_data = @gemini_api_client.create_question(@topic, @difficulty, other_questions)

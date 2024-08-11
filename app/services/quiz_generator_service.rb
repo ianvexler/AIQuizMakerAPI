@@ -1,9 +1,10 @@
 class QuizGeneratorService
-  def initialize(topic_ids, difficulty_ids, type, length)
+  def initialize(topic_ids, difficulty_ids, type, length, user)
     @topics = Topic.where(id: topic_ids).shuffle
     @difficulties = Difficulty.where(id: difficulty_ids)
     @type = type
     @length = length
+    @user = user
   end
 
   def generate_quiz
