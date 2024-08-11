@@ -4,10 +4,10 @@ class QuestionGeneratorService
     @difficulty = difficulty
   end
 
-  def generate_question
+  def generate_question(other_questions)
     @gemini_api_client = GeminiApiService.instance
 
-    question_data = @gemini_api_client.create_question(@topic, @difficulty)
+    question_data = @gemini_api_client.create_question(@topic, @difficulty, other_questions)
 
     is_valid = false
 
@@ -29,6 +29,7 @@ class QuestionGeneratorService
     question = Question.new(
       content: question_data['content'],
       confidence: question_data['confidence'],
+      hints: question_data['hints'],
       difficulty_id: @difficulty.id
     )
 

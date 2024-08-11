@@ -8,8 +8,10 @@ class GeminiApiService
     @client = GeminiApiClient.new(api_key)
   end
 
-  def create_question(topic, difficulty)
-    @client.create_question(topic, difficulty)
+  def create_question(topic, difficulty, other_questions)
+    questions = other_questions.map(&:content)
+
+    @client.create_question(topic, difficulty, questions)
   end
 
   def validate_question(topic, difficulty, question_data)

@@ -7,6 +7,7 @@
 #  confidence    :integer          default(0)
 #  content       :string(255)      not null
 #  flagged       :boolean          default(FALSE), not null
+#  hints         :text(65535)
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  difficulty_id :bigint           not null
@@ -23,6 +24,8 @@
 #  fk_rails_...  (flagged_by_id => users.id)
 #
 class Question < ApplicationRecord
+  serialize :hints, JSON
+
   belongs_to :difficulty
   has_many :question_options, dependent: :restrict_with_exception
   has_many :quiz_questions, dependent: :restrict_with_exception

@@ -32,7 +32,7 @@ class QuizGeneratorService
     @topics.each do |topic|
       questions_per_topic.times do
         question_generator = QuestionGeneratorService.new(topic, @difficulties.sample)
-        question = question_generator.generate_question
+        question = question_generator.generate_question(@quiz.questions)
         @quiz.questions << question
       end
     end
@@ -41,7 +41,7 @@ class QuizGeneratorService
   def distribute_remaining_questions(remaining_questions)
     remaining_questions.times do
       question_generator = QuestionGeneratorService.new(@topics.sample, @difficulties.sample)
-      question = question_generator.generate_question
+      question = question_generator.generate_question(@quiz.questions)
       @quiz.questions << question
     end
   end

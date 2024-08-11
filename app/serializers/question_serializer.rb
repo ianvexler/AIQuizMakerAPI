@@ -1,5 +1,5 @@
 class QuestionSerializer < ActiveModel::Serializer
-  attributes :id, :archived, :confidence, :content, :flagged
+  attributes :id, :archived, :confidence, :content, :flagged, :hints
 
   belongs_to :difficulty
   belongs_to :flagged_by
