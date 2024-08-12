@@ -37,7 +37,7 @@ class Question < ApplicationRecord
   has_many :question_responses, dependent: :restrict_with_exception
   belongs_to :topic
 
-  def self.unassigned_to_user_quizzes(user_id, topic_id)
+  def self.unassigned_to_user(user_id, topic_id)
     # All quizzes the user is enrolled in
     user_quiz_ids = User.find(user_id).quizzes.pluck(:id)
     
