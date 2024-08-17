@@ -1,10 +1,23 @@
 class QuestionGeneratorService
-  def initialize(topic, difficulty)
+  def initialize(topic, difficulty, user)
     @topic = topic
     @difficulty = difficulty
+    @user = user
   end
 
   def generate_question(other_questions)
+    # Assing existing question if any available
+    if @user.present?
+      available_questions = Question.unassigned_to_user(@user.id, @topic.id)
+
+      # Remove already included questions
+      available_questions = available_questions.reject do |question|
+        other_questions.any? { |other_question| other_question.content == question.content }
+      end
+
+      return available_questions.sample if available_questions.any?
+    end
+
     @gemini_api_client = GeminiApiService.instance
 
     question_data = @gemini_api_client.create_question(@topic, @difficulty, other_questions)
@@ -30,7 +43,8 @@ class QuestionGeneratorService
       content: question_data['content'],
       confidence: question_data['confidence'],
       hints: question_data['hints'],
-      difficulty_id: @difficulty.id
+      difficulty_id: @difficulty.id,
+      topic_id: @topic.id
     )
 
     question_data['options'].each do |option|

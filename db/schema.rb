@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_11_172720) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_11_220357) do
   create_table "course_groups", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.string "name", null: false
@@ -93,8 +93,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_11_172720) do
     t.datetime "updated_at", null: false
     t.bigint "flagged_by_id"
     t.text "hints"
+    t.bigint "topic_id"
     t.index ["difficulty_id"], name: "index_questions_on_difficulty_id"
     t.index ["flagged_by_id"], name: "index_questions_on_flagged_by_id"
+    t.index ["topic_id"], name: "index_questions_on_topic_id"
   end
 
   create_table "quiz_difficulties", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -194,6 +196,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_11_172720) do
   add_foreign_key "question_responses", "questions"
   add_foreign_key "question_responses", "users"
   add_foreign_key "questions", "difficulties"
+  add_foreign_key "questions", "topics"
   add_foreign_key "questions", "users", column: "flagged_by_id"
   add_foreign_key "quiz_difficulties", "difficulties"
   add_foreign_key "quiz_difficulties", "quizzes"

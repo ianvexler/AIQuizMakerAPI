@@ -32,4 +32,6 @@ Rails.application.routes.draw do
   end
 
   get '/health_check', to: 'health_checks#check'
+
+  mount ActionCable.server => '/cable'
 end
