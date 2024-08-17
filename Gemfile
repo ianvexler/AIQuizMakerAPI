@@ -18,6 +18,7 @@ gem 'sidekiq-cron'
 gem 'tzinfo-data', platforms: %i[windows jruby]
 gem 'singleton'
 gem 'gemini-ai', '~> 4.2.0'
+gem 'rack-cors'
 gem 'redis'
 
 group :development, :test do
