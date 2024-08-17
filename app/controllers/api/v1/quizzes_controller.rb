@@ -12,7 +12,8 @@ class Api::V1::QuizzesController < Api::V1::BaseController
       quiz_params[:topics],
       quiz_params[:difficulties],
       quiz_params[:type],
-      quiz_params[:length]
+      quiz_params[:length],
+      current_user
     )
 
     @quiz = quiz_generator.generate_quiz

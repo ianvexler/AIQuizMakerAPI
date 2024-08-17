@@ -7,7 +7,7 @@ class QuestionGeneratorService
 
   def generate_question(other_questions)
     # Assing existing question if any available
-    if user.present?
+    if @user.present?
       available_questions = Question.unassigned_to_user(@user.id, @topic.id)
 
       # Remove already included questions
