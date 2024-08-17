@@ -40,11 +40,11 @@ class Question < ApplicationRecord
   def self.unassigned_to_user(user_id, topic_id)
     # All quizzes the user is enrolled in
     user_quiz_ids = User.find(user_id).quizzes.pluck(:id)
-    
+
     # Fetch all questions for the given subject that are not already in the user's quizzes
     Question
       .joins(:topic)
-      .where(topic_id: topic_id)
+      .where(topic_id:)
       .where.not(id: QuizQuestion.where(quiz_id: user_quiz_ids).pluck(:question_id))
   end
 end

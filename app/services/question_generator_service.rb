@@ -15,9 +15,7 @@ class QuestionGeneratorService
         other_questions.any? { |other_question| other_question.content == question.content }
       end
 
-      if available_questions.any?
-        return available_questions.sample
-      end
+      return available_questions.sample if available_questions.any?
     end
 
     @gemini_api_client = GeminiApiService.instance

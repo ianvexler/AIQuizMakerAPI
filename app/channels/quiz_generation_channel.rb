@@ -8,11 +8,11 @@ class QuizGenerationChannel < ApplicationCable::Channel
   end
 
   def generate(data)
-    topics = data["topics"]
-    difficulties = data["difficulties"]
-    quiz_type = data["type"]
-    length = data["length"]
-    
+    topics = data['topics']
+    difficulties = data['difficulties']
+    quiz_type = data['type']
+    length = data['length']
+
     quiz_generator = QuizGeneratorService.new(topics, difficulties, quiz_type, length, current_user)
 
     quiz = quiz_generator.generate_quiz
@@ -20,15 +20,14 @@ class QuizGenerationChannel < ApplicationCable::Channel
     if quiz.present? && quiz.save
       quiz.users << current_user
       ActionCable.server.broadcast("quiz_generation_#{current_user.id}", {
-        status: "completed",
+                                     status: 'completed',
         quiz_id: quiz.id
-      })
+                                   })
     else
       ActionCable.server.broadcast("quiz_generation_#{current_user.id}", {
-        status: "error",
-        message: "There was an error generating the quiz"
-      })
+                                     status: 'error',
+        message: 'There was an error generating the quiz'
+                                   })
     end
   end
 end
-

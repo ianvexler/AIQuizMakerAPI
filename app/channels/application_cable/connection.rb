@@ -10,7 +10,7 @@ module ApplicationCable
     private
 
     def find_verified_user
-      token = request.headers['Authorization']&.split(' ')&.last
+      token = request.headers['Authorization']&.split&.last
       env['warden'].request.headers['Authorization'] = "Bearer #{token}"
       user = env['warden'].authenticate(:jwt)
       user || reject_unauthorized_connection
