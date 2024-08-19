@@ -9,7 +9,11 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'https://www.studyseed.io'
+    if Rails.env.development?
+      origins '*'
+    else
+      origins 'https://www.studyseed.io'
+    end
 
     resource "*",
       headers: :any,
